@@ -35,6 +35,23 @@ const Data = () => {
         city: city,
       });
 
+      setUsers([]);
+   
+      const list = await getDocs(collection(db, "users"));
+
+      list.forEach((doc) => {
+        const object = doc.data();
+        const data = {
+          id: doc.id,
+          firstName: object.firstName,
+          lastName: object.lastName,
+          city: object.city,
+          address: object.address,
+        };
+        debugger;
+        users.push(data);
+      });
+
       console.log("Document ID :", result.id);
     } catch (error) {
       console.log(error);
@@ -167,7 +184,7 @@ const Data = () => {
           </div>
 
           <div className="p-field">
-            <Button label="YENİ DOC KAYDET" onClick={saveUser} />
+            <Button label="YENİ DOC KAYDET" onClick={()=> saveUser()} />
           </div>
         </div>
       </div>
