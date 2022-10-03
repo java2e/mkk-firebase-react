@@ -4,10 +4,12 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getFirestore,
   setDoc,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -81,6 +83,7 @@ const Index = () => {
       const result = await setDoc(doc(db, "users", "MKK"), {
         firstName: firstName,
         lastName: lastName,
+        address: address,
       });
       console.log(result);
     } catch (error) {
@@ -126,6 +129,24 @@ const Index = () => {
     }
   };
 
+  const removeField = async () => {
+    try {
+      const document = await doc(db, "users", "MKK");
+
+      console.log(document);
+
+      await updateDoc(document, {
+        address: deleteField(),
+      });
+
+      const lastDocument = await doc(db, "users", "MKK");
+
+      console.log(lastDocument);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="flex justify-content-center">
       <div className="p-fluid">
@@ -165,6 +186,7 @@ const Index = () => {
           <Button label="DATA TYPE KAYDET" onClick={saveWithDataType} />
           <Button label="Converter" onClick={converter} />
           <Button label="Remove Doc" onClick={removeDoc} />
+          <Button label="Remove Field" onClick={removeField} />
         </div>
       </div>
     </div>
