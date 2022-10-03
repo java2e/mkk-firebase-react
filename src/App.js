@@ -5,11 +5,12 @@ import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
+import Index from './firebaseStore/Index';
 
 function App() {
   return (
     <div className="App">
-    <Login />
+   <Index />
     </div>
   );
 }
