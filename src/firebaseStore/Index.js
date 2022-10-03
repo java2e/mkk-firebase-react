@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { app } from "../firebaseConfig";
 import { getFirestore } from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
+import { Button } from "primereact";
 
 const Index = () => {
   const [firstName, setFirstName] = useState("");
@@ -41,6 +42,10 @@ const Index = () => {
         <div className="p-field">
           <label htmlFor="city">City</label>
           <InputText id="city" onChange={(e) => setCity(e.target.value)} />
+        </div>
+
+        <div className="p-field">
+          <Button label="KAYDET" />
         </div>
       </div>
     </div>
