@@ -3,6 +3,7 @@ import { app } from "../firebaseConfig";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getFirestore,
   setDoc,
@@ -10,17 +11,24 @@ import {
 } from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import { async } from "@firebase/util";
 
 class User {
-  constructor(firstName,lastName,city,address) {
+  constructor(firstName, lastName, city, address) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.city = city;
     this.address = address;
   }
   toString() {
-    return this.firstName+", "+this.lastName+", "+this.city+", "+this.address;
+    return (
+      this.firstName +
+      ", " +
+      this.lastName +
+      ", " +
+      this.city +
+      ", " +
+      this.address
+    );
   }
 }
 
@@ -38,23 +46,20 @@ const Index = () => {
         firstName: user.firstName,
         lastName: user.lastName,
         city: user.city,
-        address: user.address
+        address: user.address,
       };
     },
-    fromFirestore: (snapshot,options) => {
+    fromFirestore: (snapshot, options) => {
       const data = snapshot.data(options);
-      return new User(data.firstName,data.lastName,data.city,data.address);
-    }
-  }
+      return new User(data.firstName, data.lastName, data.city, data.address);
+    },
+  };
 
-  const converter =()=> {
-
-    const user = doc(db,"users","MKK").withConverter(userConverter);
+  const converter = () => {
+    const user = doc(db, "users", "MKK").withConverter(userConverter);
 
     console.log(user);
-
-
-  }
+  };
 
   const saveUser = async () => {
     try {
@@ -93,26 +98,33 @@ const Index = () => {
     }
   };
 
-  const saveWithDataType = async() => {
-    
-    const data ={
+  const saveWithDataType = async () => {
+    const data = {
       name: "MKK",
-      active : true,
+      active: true,
       number: 2.21331,
       expireTime: Timestamp.fromDate(new Date()),
-      roles : ["MANAGER","CUSTOMER","EMPLOYEE"],
+      roles: ["MANAGER", "CUSTOMER", "EMPLOYEE"],
       birthDate: null,
-      info : {
-        detail:"detail",
-        ekstra : {
-          nested: "test example"
-        }
-      }
+      info: {
+        detail: "detail",
+        ekstra: {
+          nested: "test example",
+        },
+      },
+    };
+
+    await setDoc(doc(db, "data", "MKK1"), data);
+  };
+
+  const removeDoc = async () => {
+    try {
+      const result = await deleteDoc(doc(db, "users", "MKK"));
+      console.log(result);
+    } catch (error) {
+      console.log(error);
     }
-
-    await setDoc(doc(db,"data","MKK1"),data);
-
-  }
+  };
 
   return (
     <div className="flex justify-content-center">
@@ -152,6 +164,7 @@ const Index = () => {
           <Button label="EK KEY KAYDET" onClick={saveDocParam} />
           <Button label="DATA TYPE KAYDET" onClick={saveWithDataType} />
           <Button label="Converter" onClick={converter} />
+          <Button label="Remove Doc" onClick={removeDoc} />
         </div>
       </div>
     </div>
