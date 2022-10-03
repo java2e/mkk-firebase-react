@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
-import {getAuth,signInWithEmailAndPassword, createUserWithEmailAndPassword} from "firebase/auth";
+import {getAuth,signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider,signInWithPopup} from "firebase/auth";
 import {app} from "../firebaseConfig";
 import { Button } from "primereact/button";
 
@@ -9,6 +9,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const auth = getAuth();
+
+  const provider = new GoogleAuthProvider();
 
   const login =()=> {
     
@@ -38,6 +40,30 @@ const Login = () => {
 
   }
 
+  const loginWithGoogle =()=>{
+
+    signInWithPopup(auth,provider)
+    .then((result) => {
+
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      console.log("Token :"+token);
+
+      const user = result.user;
+
+      console.log(user);
+
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+
+
+
+
+  }
+
 
   return (
     <div>
@@ -62,6 +88,7 @@ const Login = () => {
           <div className="p-field">
           <Button label="Giriş" onClick={login} />
           <Button label="Kaydet" onClick={addUser} />
+          <Button label="Login with Google" onClick={loginWithGoogle} />
           </div>
         </div>
       </center>
