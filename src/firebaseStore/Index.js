@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { app } from "../firebaseConfig";
-import { getFirestore } from "firebase/firestore";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
-import { Button } from "primereact";
+import { Button } from "primereact/button";
+import { async } from "@firebase/util";
 
 const Index = () => {
   const [firstName, setFirstName] = useState("");
@@ -11,6 +12,21 @@ const Index = () => {
   const [city, setCity] = useState("");
 
   const db = getFirestore(app);
+
+  const saveUser = async () => {
+    try {
+      const result = await addDoc(collection(db, "users"), {
+        firstName: firstName,
+        lastName: lastName,
+        address: address,
+        city: city,
+      });
+
+      console.log("Document ID :", result.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex justify-content-center">
