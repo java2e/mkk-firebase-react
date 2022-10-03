@@ -12,6 +12,18 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { async } from "@firebase/util";
 
+class User {
+  constructor(firstName,lastName,city,address) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.city = city;
+    this.address = address;
+  }
+  toString() {
+    return this.firstName+", "+this.lastName+", "+this.city+", "+this.address;
+  }
+}
+
 const Index = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -19,6 +31,30 @@ const Index = () => {
   const [city, setCity] = useState("");
 
   const db = getFirestore(app);
+
+  const userConverter = {
+    toFirestore: (user) => {
+      return {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        city: user.city,
+        address: user.address
+      };
+    },
+    fromFirestore: (snapshot,options) => {
+      const data = snapshot.data(options);
+      return new User(data.firstName,data.lastName,data.city,data.address);
+    }
+  }
+
+  const converter =()=> {
+
+    const user = doc(db,"users","MKK").withConverter(userConverter);
+
+    console.log(user);
+
+
+  }
 
   const saveUser = async () => {
     try {
@@ -115,6 +151,7 @@ const Index = () => {
           <Button label="YENİ DOC KAYDET" onClick={saveDoc} />
           <Button label="EK KEY KAYDET" onClick={saveDocParam} />
           <Button label="DATA TYPE KAYDET" onClick={saveWithDataType} />
+          <Button label="Converter" onClick={converter} />
         </div>
       </div>
     </div>
