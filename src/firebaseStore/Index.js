@@ -6,6 +6,7 @@ import {
   doc,
   getFirestore,
   setDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -56,6 +57,27 @@ const Index = () => {
     }
   };
 
+  const saveWithDataType = async() => {
+    
+    const data ={
+      name: "MKK",
+      active : true,
+      number: 2.21331,
+      expireTime: Timestamp.fromDate(new Date()),
+      roles : ["MANAGER","CUSTOMER","EMPLOYEE"],
+      birthDate: null,
+      info : {
+        detail:"detail",
+        ekstra : {
+          nested: "test example"
+        }
+      }
+    }
+
+    await setDoc(doc(db,"data","MKK1"),data);
+
+  }
+
   return (
     <div className="flex justify-content-center">
       <div className="p-fluid">
@@ -92,6 +114,7 @@ const Index = () => {
           <Button label="KAYDET" onClick={saveUser} />
           <Button label="YENİ DOC KAYDET" onClick={saveDoc} />
           <Button label="EK KEY KAYDET" onClick={saveDocParam} />
+          <Button label="DATA TYPE KAYDET" onClick={saveWithDataType} />
         </div>
       </div>
     </div>
