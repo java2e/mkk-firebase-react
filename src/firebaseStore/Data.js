@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { app } from "../firebaseConfig";
 import {
   addDoc,
@@ -6,6 +6,7 @@ import {
   deleteDoc,
   deleteField,
   doc,
+  getDocs,
   getFirestore,
   setDoc,
   Timestamp,
@@ -16,17 +17,15 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
-
 const Data = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  const [users,setUsers] = useState([]);
+  const [users, setUsers] = useState([]);
 
   const db = getFirestore(app);
 
- 
   const saveUser = async () => {
     try {
       const result = await addDoc(collection(db, "users"), {
@@ -47,6 +46,7 @@ const Data = () => {
       const result = await setDoc(doc(db, "users", "MKK"), {
         firstName: firstName,
         lastName: lastName,
+        city: city,
         address: address,
       });
       console.log(result);
@@ -111,56 +111,76 @@ const Data = () => {
     }
   };
 
+  useEffect(() => {
+    const loadData = async () => {
+      const list = await getDocs(collection(db, "users"));
+
+      list.forEach((doc) => {
+        const object = doc.data();
+        const data = {
+          id: doc.id,
+          firstName: object.firstName,
+          lastName: object.lastName,
+          city: object.city,
+          address: object.address,
+        };
+        debugger;
+        users.push(data);
+        console.log(doc.id, " => ", doc.data());
+      });
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div>
-    <div className="flex justify-content-center">
-      <div className="p-fluid">
-        <div className="p-field">
-          <label htmlFor="firstname">Firstname</label>
-          <InputText
-            id="firstname"
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </div>
+      <div className="flex justify-content-center">
+        <div className="p-fluid">
+          <div className="p-field">
+            <label htmlFor="firstname">Firstname</label>
+            <InputText
+              id="firstname"
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
 
-        <div className="p-field">
-          <label htmlFor="lastname">Lastname</label>
-          <InputText
-            id="lastname"
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
+          <div className="p-field">
+            <label htmlFor="lastname">Lastname</label>
+            <InputText
+              id="lastname"
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
 
-        <div className="p-field">
-          <label htmlFor="address">Address</label>
-          <InputText
-            id="address"
-            onChange={(e) => setAddress(e.target.value)}
-          />
-        </div>
+          <div className="p-field">
+            <label htmlFor="address">Address</label>
+            <InputText
+              id="address"
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
 
-        <div className="p-field">
-          <label htmlFor="city">City</label>
-          <InputText id="city" onChange={(e) => setCity(e.target.value)} />
-        </div>
+          <div className="p-field">
+            <label htmlFor="city">City</label>
+            <InputText id="city" onChange={(e) => setCity(e.target.value)} />
+          </div>
 
-        <div className="p-field">
-          <Button label="YENİ DOC KAYDET" onClick={saveDoc} />
+          <div className="p-field">
+            <Button label="YENİ DOC KAYDET" onClick={saveUser} />
+          </div>
         </div>
       </div>
-   
+      <div className="p-fluid">
+        <DataTable value={users}>
+          <Column field="id" header="ID"></Column>
+          <Column field="firstName" header="First Name"></Column>
+          <Column field="lastName" header="Last Name"></Column>
+          <Column field="city" header="City"></Column>
+          <Column field="address" header="Address"></Column>
+        </DataTable>
+      </div>
     </div>
-       <div className="p-fluid">
-       <DataTable value={users}>
-         <Column field="ID" header="ID"></Column>
-         <Column field="firstName" header="First Name"></Column>
-         <Column field="lastName" header="Last Name"></Column>
-         <Column field="city" header="City"></Column>
-         <Column field="address" header="Address"></Column>
-       </DataTable>
-     </div>
-     </div>
-
   );
 };
 
