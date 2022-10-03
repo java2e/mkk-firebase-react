@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { app } from "../firebaseConfig";
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getFirestore,
+  setDoc,
+} from "firebase/firestore";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { async } from "@firebase/util";
@@ -23,6 +29,28 @@ const Index = () => {
       });
 
       console.log("Document ID :", result.id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveDoc = async () => {
+    try {
+      const result = await setDoc(doc(db, "users", "MKK"), {
+        firstName: firstName,
+        lastName: lastName,
+      });
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveDocParam = async () => {
+    try {
+      const mkk = await doc(db, "users", "MKK");
+
+      setDoc(mkk, { address: address }, { merge: true });
     } catch (error) {
       console.log(error);
     }
@@ -62,6 +90,8 @@ const Index = () => {
 
         <div className="p-field">
           <Button label="KAYDET" onClick={saveUser} />
+          <Button label="YENİ DOC KAYDET" onClick={saveDoc} />
+          <Button label="EK KEY KAYDET" onClick={saveDocParam} />
         </div>
       </div>
     </div>
