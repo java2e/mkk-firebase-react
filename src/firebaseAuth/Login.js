@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { InputText } from "primereact/inputtext";
-import {getAuth,signInWithEmailAndPassword} from "firebase/auth";
+import {getAuth,signInWithEmailAndPassword, createUserWithEmailAndPassword} from "firebase/auth";
 import {app} from "../firebaseConfig";
 import { Button } from "primereact/button";
 
@@ -21,6 +21,21 @@ const Login = () => {
     .catch((error) =>{
       console.log(error);
     })
+  }
+
+  const addUser =() => {
+
+    // firebase tarafında gelen fonksiyon
+    createUserWithEmailAndPassword(auth,email,password)
+    .then((response) => {
+      const user = response.user;
+      console.log(user);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+
+
   }
 
 
@@ -46,6 +61,7 @@ const Login = () => {
           </div>
           <div className="p-field">
           <Button label="Giriş" onClick={login} />
+          <Button label="Kaydet" onClick={addUser} />
           </div>
         </div>
       </center>
