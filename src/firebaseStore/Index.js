@@ -61,7 +61,7 @@ const Index = () => {
         </div>
 
         <div className="p-field">
-          <Button label="KAYDET" />
+          <Button label="KAYDET" onClick={saveUser} />
         </div>
       </div>
     </div>
