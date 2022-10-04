@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { app } from "../firebaseConfig";
-import { getDatabase, ref, set } from "firebase/database";
+import { child, get, getDatabase, onValue, push, query, ref, set } from "firebase/database";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { orderBy } from "firebase/firestore";
 
 const Index = () => {
   const database = getDatabase(app);
@@ -37,9 +38,43 @@ const Index = () => {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const readData =() => {
+
+    const dbRef = ref(database);
+
+    get(child(dbRef,'mkk/XYZ2')).then((result) => {
+      if(result.exists) {
+        console.log(result.val());
+      }
+      else {
+        console.log("No data avaiable!");
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
+
+  }
+
+  const readList =()=> {
+
+    const list =ref(database,'mkk');
+
+    onValue(list,(value) => {
+      const data = value.val();
+      if(value.exists) {
+        Object.values(data).map((mkk) => {
+          console.log(mkk);
+        })
+      }
+    })
+
+    console.log(list);
 
 
   }
+
 
   return (
 
@@ -76,6 +111,7 @@ const Index = () => {
 
       <div className="p-field">
         <Button label="KAYDET" onClick={saveUser} />
+        <Button label="KAYDET" onClick={readList} />
       </div>
     </div>
   </div>
