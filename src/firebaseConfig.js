@@ -13,7 +13,8 @@ const firebaseConfig = {
   storageBucket: "mkk-test-4bbac.appspot.com",
   messagingSenderId: "273256109366",
   appId: "1:273256109366:web:ae04e4fe2e47064ba18f97",
-  measurementId: "G-Y6KB66FFJE"
+  measurementId: "G-Y6KB66FFJE",
+  databaseURL:'https://mkk-test-4bbac-default-rtdb.firebaseio.com'
 };
 
 // Initialize Firebase
