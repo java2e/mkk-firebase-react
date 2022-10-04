@@ -35,22 +35,16 @@ const Data = () => {
         city: city,
       });
 
-      setUsers([]);
-   
-      const list = await getDocs(collection(db, "users"));
+      const data = {
+        id: result.id,
+        firstName: firstName,
+        lastName: lastName,
+        city: city,
+        address: address,
+      };
 
-      list.forEach((doc) => {
-        const object = doc.data();
-        const data = {
-          id: doc.id,
-          firstName: object.firstName,
-          lastName: object.lastName,
-          city: object.city,
-          address: object.address,
-        };
-        debugger;
-        users.push(data);
-      });
+      const newList = users.concat(data); // var olan listenin sonun yeni elamanı ekliyor
+      setUsers(newList); // state günceleme yapılıyor
 
       console.log("Document ID :", result.id);
     } catch (error) {
@@ -101,9 +95,9 @@ const Data = () => {
     await setDoc(doc(db, "data", "MKK1"), data);
   };
 
-  const removeDoc = async () => {
+  const removeDoc = async (docId) => {
     try {
-      const result = await deleteDoc(doc(db, "users", "MKK"));
+      const result = await deleteDoc(doc(db, "users", docId));
       console.log(result);
     } catch (error) {
       console.log(error);
@@ -150,6 +144,18 @@ const Data = () => {
     loadData();
   }, []);
 
+  const actionBodyTemplate = (rowData) => {
+    return (
+      <React.Fragment>
+        <Button
+          icon="pi pi-trash"
+          className="p-button-rounded p-button-warning"
+          onClick={() => removeDoc(rowData.id)}
+        />
+      </React.Fragment>
+    );
+  };
+
   return (
     <div>
       <div className="flex justify-content-center">
@@ -184,7 +190,7 @@ const Data = () => {
           </div>
 
           <div className="p-field">
-            <Button label="YENİ DOC KAYDET" onClick={()=> saveUser()} />
+            <Button label="YENİ DOC KAYDET" onClick={() => saveUser()} />
           </div>
         </div>
       </div>
@@ -195,6 +201,11 @@ const Data = () => {
           <Column field="lastName" header="Last Name"></Column>
           <Column field="city" header="City"></Column>
           <Column field="address" header="Address"></Column>
+          <Column
+            body={actionBodyTemplate}
+            exportable={false}
+            style={{ minWidth: "8rem" }}
+          ></Column>
         </DataTable>
       </div>
     </div>
