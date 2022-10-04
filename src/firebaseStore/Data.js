@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { app } from "../firebaseConfig";
 import {
   addDoc,
@@ -16,6 +16,8 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
+import { Toast } from "primereact/toast";
 
 const Data = () => {
   const [firstName, setFirstName] = useState("");
@@ -23,6 +25,8 @@ const Data = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [users, setUsers] = useState([]);
+
+  const toast = useRef(null);
 
   const db = getFirestore(app);
 
@@ -98,6 +102,11 @@ const Data = () => {
   const removeDoc = async (docId) => {
     try {
       const result = await deleteDoc(doc(db, "users", docId));
+
+      const newList = users.filter((item) => item.id !== docId);
+
+      setUsers(newList);
+
       console.log(result);
     } catch (error) {
       console.log(error);
@@ -150,14 +159,35 @@ const Data = () => {
         <Button
           icon="pi pi-trash"
           className="p-button-rounded p-button-warning"
-          onClick={() => removeDoc(rowData.id)}
+          onClick={() => confirm1(rowData)}
         />
       </React.Fragment>
     );
   };
 
+  const confirm1 = (rowData) => {
+    confirmDialog({
+      message: "Silmek istiyormusunuz?",
+      header: "Onay",
+      icon: "pi pi-exclamation-triangle",
+      accept: () => removeDoc(rowData.id),
+      reject,
+    });
+  };
+
+  const reject = () => {
+    toast.current.show({
+      severity: "Bilgi",
+      summary: "İptal Ettiniz!",
+      detail: "You have rejected",
+      life: 3000,
+    });
+  };
+
   return (
     <div>
+      <Toast ref={toast} />
+      <ConfirmDialog />
       <div className="flex justify-content-center">
         <div className="p-fluid">
           <div className="p-field">
@@ -204,7 +234,7 @@ const Data = () => {
           <Column
             body={actionBodyTemplate}
             exportable={false}
-            style={{ minWidth: "8rem" }}
+            style={{ minWidth: "4rem" }}
           ></Column>
         </DataTable>
       </div>
