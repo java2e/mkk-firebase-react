@@ -7,11 +7,12 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import Data from './firebaseStore/Data';
 import Index from './firebaseDatabase/Index';
+import FileIO from './firebaseStorage/FileIO';
 
 function App() {
   return (
     <div className="App">
-   <Index />
+      <FileIO />
     </div>
   );
 }
