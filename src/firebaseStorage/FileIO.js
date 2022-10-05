@@ -4,6 +4,8 @@ import {
   deleteObject,
   getDownloadURL,
   getStorage,
+  list,
+  listAll,
   ref,
   uploadBytesResumable,
   uploadString,
@@ -82,6 +84,27 @@ const FileIO = () => {
     } catch (error) {}
   };
 
+  const list = async () => {
+    const listRef = ref(storage, "files");
+
+    // const listResult = await list(listRef,{maxResults: 100});
+
+    listAll(listRef)
+      .then((res) => {
+        res.prefixes.forEach((folderRef) => {
+          console.log(folderRef);
+        });
+        res.items.forEach((item) => {
+          console.log(item);
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    //console.log(listResult);
+  };
+
   useEffect(() => {
     const loadImage = async () => {
       await getDownloadURL(ref(storage, "footer.jpg"))
@@ -118,6 +141,7 @@ const FileIO = () => {
       />
       {imageUrl && <Image src={imageUrl} alt="Image" width="250" />}
       <Button label="Remove Image" onClick={() => deleteImage()} />
+      <Button label="Get List" onClick={() => list()} />
     </div>
   );
 };
