@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { app } from "../firebaseConfig";
 import {
   getDownloadURL,
   getStorage,
   ref,
   uploadBytesResumable,
+  uploadString,
 } from "firebase/storage";
 import { FileUpload } from "primereact/fileupload";
+import { Image } from "primereact/image";
 
 const FileIO = () => {
+  const [imageUrl,setImageUrl] = useState(null);
   const storage = getStorage(app,"gs://mkk-test-4bbac.appspot.com");
 
   const onBasicUpload = (event) => {
@@ -19,8 +22,19 @@ const FileIO = () => {
 
     if (!file) return;
 
+    const metaData = {
+      contentType: 'application/',
+    };
+
+
     const storageRef = ref(storage,  file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const uploadTask = uploadBytesResumable(storageRef, file,metaData);
+
+    uploadTask.cancel();
+    uploadTask.resume();
+    uploadTask.pause();
+
+
 
     uploadTask.on(
       "state_changed",
@@ -39,7 +53,49 @@ const FileIO = () => {
         });
       }
     );
+
+    const message = "sdjakljdaljdalksj+adasjkldakldasdasdja";
+
+    uploadString(storageRef,message,"base64").then((result) => {
+      console.log("Uploaded base64 string!")
+    })
+
+    const message2 =" data:text/plain;base64,asdlkalkdaskdaalsdkadkş";
+
+    uploadString(storageRef,message2,"data_url").then((result) => {
+      console.log("Uploaded data url!");
+    })
+
+
+
   };
+
+  useEffect(() => {
+
+    const loadImage =async() => {
+      await getDownloadURL(ref(storage,"footer.jpg"))
+      .then((url) => {
+
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+        };
+
+        xhr.open('GET',url);
+        xhr.send();
+
+        setImageUrl(url);
+
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    }
+
+    loadImage();
+
+  },[])
 
   return (
     <div>
@@ -52,6 +108,9 @@ const FileIO = () => {
         auto={true}
         uploadHandler={(e) => onBasicUpload(e)}
       />
+      {imageUrl &&
+      <Image src={imageUrl} alt="Image" width="250" />
+      }
     </div>
   );
 };
